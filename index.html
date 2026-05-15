@@ -1272,7 +1272,7 @@ function parseCSV(text){
 
 function normKey(k){ return (k||'').toLowerCase().replace(/[\s_]+/g,''); }
 function driveThumb(url, sz='w1600'){ const m=(url||'').match(/[-\w]{25,}/); return m?`https://drive.google.com/thumbnail?id=${m[0]}&sz=${sz}`:''; }
-function driveThumbSm(url){ return driveThumb(url,'w400'); }
+function driveThumbSm(url){ return driveThumb(url,'w2000'); }
 
 // ===== SITE SETTINGS =====
 let siteSettings = {};
