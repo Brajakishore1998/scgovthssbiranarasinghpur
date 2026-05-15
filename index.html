@@ -377,6 +377,13 @@ footer{background:var(--navy);color:rgba(255,255,255,0.8);padding:50px 0 20px;}
 .club-gallery-close:hover{color:var(--navy);}
 
 /* ===== CLUBS ===== */
+.club-person-icon{
+  width:90px;height:90px;border-radius:50%;
+  background:linear-gradient(135deg,var(--saffron),var(--navy));
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 10px;
+  font-size:2rem;color:#fff;
+}
 .clubs-grid{
   display:grid;
   grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
@@ -1753,9 +1760,9 @@ async function loadClubs(){
 
       const role = (row['Role'] || '').trim().toLowerCase().replace(/\s+/g,'-');
       if(role === 'mentor'){
-        grouped[club].mentor = { name: row['Member Name'], photo: toThumb(row['Photo Link']) };
+        grouped[club].mentor = { name: row['Member Name'] };
       } else if(role.includes('co') && role.includes('mentor')){
-        grouped[club].comentor = { name: row['Member Name'], photo: toThumb(row['Photo Link']) };
+        grouped[club].comentor = { name: row['Member Name'] };
       } else {
         if(row['Member Name']){
           grouped[club].members.push({ name: row['Member Name'], cls: row['Class'] });
@@ -1773,9 +1780,7 @@ async function loadClubs(){
       const base = {
         Club: clubName,
         Mentor: g.mentor ? g.mentor.name : '',
-        MentorPhoto: g.mentor ? g.mentor.photo : '',
         CoMentor: g.comentor ? g.comentor.name : '',
-        CoMentorPhoto: g.comentor ? g.comentor.photo : '',
         ActivityPhotos: g.photos   // full array on every row
       };
       if(!g.members.length){
@@ -1847,7 +1852,7 @@ function showClub(clubName,btn=null){
 
         <div class="club-person">
 
-          <img src="${first.MentorPhoto || 'https://via.placeholder.com/150'}">
+          <div class="club-person-icon"><i class="fas fa-chalkboard-teacher"></i></div>
 
           <h3>${first.Mentor || '-'}</h3>
 
@@ -1857,7 +1862,7 @@ function showClub(clubName,btn=null){
 
         <div class="club-person">
 
-          <img src="${first.CoMentorPhoto || 'https://via.placeholder.com/150'}">
+          <div class="club-person-icon"><i class="fas fa-user-tie"></i></div>
 
           <h3>${first.CoMentor || '-'}</h3>
 
