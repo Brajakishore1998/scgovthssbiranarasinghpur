@@ -184,7 +184,7 @@ button{cursor:pointer;border:none;background:none;font-family:inherit;}
 .gallery-filter{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:30px;}
 .gallery-filter-btn{padding:7px 18px;border-radius:20px;font-size:0.85rem;font-weight:500;border:2px solid var(--gray-200);color:var(--gray-600);transition:var(--transition);}
 .gallery-filter-btn.active,.gallery-filter-btn:hover{border-color:var(--saffron);background:var(--saffron);color:var(--navy);}
-.gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;}
+.gallery-grid{display:flex;gap:16px;overflow-x:auto;scroll-behavior:smooth;padding-bottom:10px;}
 .gallery-item{border-radius:var(--radius);overflow:hidden;aspect-ratio:4/3;cursor:pointer;position:relative;box-shadow:var(--shadow-sm);}
 .gallery-item img{width:100%;height:100%;object-fit:cover;transition:transform 0.4s ease;}
 .gallery-item:hover img{transform:scale(1.08);}
@@ -347,6 +347,164 @@ footer{background:var(--navy);color:rgba(255,255,255,0.8);padding:50px 0 20px;}
 #scrollTop.show{display:flex;}
 #scrollTop:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);}
 
+
+/* ===== CLUBS ===== */
+.clubs-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:24px;
+}
+
+.club-card{
+  background:var(--white);
+  border-radius:var(--radius-lg);
+  overflow:hidden;
+  box-shadow:var(--shadow-sm);
+  border:1px solid var(--gray-200);
+  transition:var(--transition);
+}
+
+.club-card:hover{
+  transform:translateY(-5px);
+  box-shadow:var(--shadow-md);
+}
+
+.club-header{
+  background:linear-gradient(135deg,var(--navy),var(--navy-light));
+  color:var(--white);
+  padding:20px;
+}
+
+.club-header h3{
+  font-family:'Playfair Display',serif;
+  font-size:1.1rem;
+}
+
+.club-body{
+  padding:20px;
+}
+
+.club-body p{
+  font-size:0.85rem;
+  color:var(--gray-600);
+  margin-bottom:10px;
+  line-height:1.6;
+}
+
+.club-members ul{
+  padding-left:18px;
+  list-style:disc;
+}
+
+.club-members li{
+  font-size:0.82rem;
+  margin-bottom:5px;
+  color:var(--gray-700);
+}
+
+.club-gallery,
+.facility-gallery,
+.gallery-grid{
+  display:flex;
+  gap:14px;
+  overflow-x:auto;
+  scroll-behavior:smooth;
+  padding-bottom:10px;
+}
+
+.club-gallery img,
+.facility-gallery img{
+  width:220px;
+  height:150px;
+  object-fit:cover;
+  border-radius:12px;
+  flex-shrink:0;
+  cursor:pointer;
+}
+
+.gallery-item{
+  min-width:280px;
+  flex-shrink:0;
+}
+
+
+.club-main-card{
+  background:var(--white);
+  border-radius:20px;
+  padding:30px;
+  box-shadow:var(--shadow-md);
+  border:1px solid var(--gray-200);
+}
+
+.club-top{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:24px;
+  margin-bottom:30px;
+}
+
+.club-person{
+  background:var(--gray-100);
+  border-radius:18px;
+  padding:20px;
+  text-align:center;
+}
+
+.club-person img{
+  width:120px;
+  height:120px;
+  object-fit:cover;
+  border-radius:50%;
+  margin:0 auto 14px;
+  border:4px solid var(--saffron);
+}
+
+.club-person h3{
+  color:var(--navy);
+  font-family:'Playfair Display',serif;
+  margin-bottom:6px;
+}
+
+.club-members-table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+.club-members-table th{
+  background:var(--navy);
+  color:white;
+  padding:12px;
+  text-align:left;
+}
+
+.club-members-table td{
+  padding:10px 12px;
+  border-bottom:1px solid var(--gray-200);
+}
+
+.club-activity-gallery{
+  display:flex;
+  gap:14px;
+  overflow-x:auto;
+  margin-top:20px;
+  padding-bottom:10px;
+}
+
+.club-activity-gallery img{
+  width:260px;
+  height:180px;
+  object-fit:cover;
+  border-radius:14px;
+  flex-shrink:0;
+  cursor:pointer;
+}
+
+@media(max-width:768px){
+  .club-top{
+    grid-template-columns:1fr;
+  }
+}
+
 /* ===== RESPONSIVE ===== */
 @media(max-width:1024px){
   .notices-wrapper{grid-template-columns:1fr;}
@@ -414,6 +572,7 @@ footer{background:var(--navy);color:rgba(255,255,255,0.8);padding:50px 0 20px;}
       <a href="#notices">Notices</a>
       <a href="#about">About</a>
       <a href="#gallery">Gallery</a>
+      <a href="#clubs">Clubs</a>
       <a href="#academics">Academics</a>
       <a href="#staff">Staff</a>
       <a href="#timetable">Timetable</a>
@@ -441,6 +600,7 @@ footer{background:var(--navy);color:rgba(255,255,255,0.8);padding:50px 0 20px;}
     <a href="#notices" onclick="toggleMobileMenu()">📋 Notices</a>
     <a href="#about" onclick="toggleMobileMenu()">🏫 About</a>
     <a href="#gallery" onclick="toggleMobileMenu()">🖼 Gallery</a>
+    <a href="#clubs" onclick="toggleMobileMenu()">🎯 Clubs</a>
     <a href="#academics" onclick="toggleMobileMenu()">📚 Academics</a>
     <a href="#staff" onclick="toggleMobileMenu()">👨‍🏫 Staff</a>
     <a href="#timetable" onclick="toggleMobileMenu()">🕐 Timetable</a>
@@ -588,7 +748,40 @@ footer{background:var(--navy);color:rgba(255,255,255,0.8);padding:50px 0 20px;}
   <p id="lightbox-caption"></p>
 </div>
 
+
+
+<!-- ASPIRATIONAL COMPONENTS -->
+<section id="clubs" class="section">
+  <div class="container">
+
+    <p class="badge badge-saffron" style="display:block;text-align:center;margin-bottom:8px;">
+      🌟 ASPIRATIONAL COMPONENTS
+    </p>
+
+    <h2 class="section-title">
+      Aspirational Components
+    </h2>
+
+    <div class="section-divider"></div>
+
+    <div style="text-align:center;margin-bottom:30px;">
+      <button class="gallery-filter-btn active club-tab-btn" onclick="showClub('Kaushali Club',this)">Kaushali Club</button>
+      <button class="gallery-filter-btn club-tab-btn" onclick="showClub('Jigyasha Club',this)">Jigyasha Club</button>
+      <button class="gallery-filter-btn club-tab-btn" onclick="showClub('Sahitya Srujani Club',this)">Sahitya Srujani Club</button>
+      <button class="gallery-filter-btn club-tab-btn" onclick="showClub('Kridangana Club',this)">Kridangana Club</button>
+    </div>
+
+    <div id="clubContent">
+      <div class="loading-spinner">
+        <i class="fas fa-spinner"></i>
+      </div>
+    </div>
+
+  </div>
+</section>
+
 <!-- FACILITIES -->
+
 <section id="facilities" class="section section-alt">
   <div class="container">
     <p class="badge badge-green" style="display:block;text-align:center;margin-bottom:8px;">🏗 INFRASTRUCTURE</p>
@@ -862,7 +1055,8 @@ footer{background:var(--navy);color:rgba(255,255,255,0.8);padding:50px 0 20px;}
           <li><a href="#academics">Streams Offered</a></li>
           <li><a href="#timetable">Timetable</a></li>
           <li><a href="#academics">Exam Schedule</a></li>
-          <li><a href="#gallery">Gallery</a></li>
+          <li><a href="#gallery">Gallery</a>
+      <a href="#clubs">Clubs</a></li>
           <li><a href="#achievements">Achievements</a></li>
           <li><a href="#contact">Contact Us</a></li>
         </ul>
@@ -1465,5 +1659,148 @@ async function init(){
 
 document.addEventListener('DOMContentLoaded', init);
 </script>
+
+
+
+
+<script>
+
+let allClubData = [];
+
+async function loadClubs(){
+
+  try{
+
+    const response = await fetch(
+      "https://opensheet.elk.sh/1h9Vjtdj3GA65HulfRGoHCi8kAPAgorPl/Clubs"
+    );
+
+    allClubData = await response.json();
+
+    showClub('Kaushali Club');
+
+  }catch(err){
+
+    document.getElementById("clubContent").innerHTML = `
+      <div class="error-msg">
+        Unable to load club data.
+      </div>
+    `;
+  }
+}
+
+function showClub(clubName,btn=null){
+
+  const content = document.getElementById("clubContent");
+
+  const clubData = allClubData.filter(
+    item => item.Club === clubName
+  );
+
+  if(!clubData.length){
+
+    content.innerHTML = `
+      <div class="error-msg">
+        No data available for ${clubName}
+      </div>
+    `;
+
+    return;
+  }
+
+  if(btn){
+    document.querySelectorAll('.club-tab-btn').forEach(b=>{
+      b.classList.remove('active');
+    });
+
+    btn.classList.add('active');
+  }
+
+  const first = clubData[0];
+
+  const members = clubData.map((m,index)=>`
+    <tr>
+      <td>${index+1}</td>
+      <td>${m.Member || '-'}</td>
+      <td>${m.Class || '-'}</td>
+    </tr>
+  `).join("");
+
+  const photos = clubData
+    .filter(p=>p.ActivityPhoto)
+    .map(p=>`
+      <img src="${p.ActivityPhoto}"
+      onclick="openLightbox('${p.ActivityPhoto}','${clubName}')">
+    `).join("");
+
+  content.innerHTML = `
+
+    <div class="club-main-card">
+
+      <div class="club-top">
+
+        <div class="club-person">
+
+          <img src="${first.MentorPhoto || 'https://via.placeholder.com/150'}">
+
+          <h3>${first.Mentor || '-'}</h3>
+
+          <p><strong>Mentor</strong></p>
+
+        </div>
+
+        <div class="club-person">
+
+          <img src="${first.CoMentorPhoto || 'https://via.placeholder.com/150'}">
+
+          <h3>${first.CoMentor || '-'}</h3>
+
+          <p><strong>Co-Mentor</strong></p>
+
+        </div>
+
+      </div>
+
+      <h3 style="margin-bottom:16px;color:var(--navy);font-family:'Playfair Display',serif;">
+        👨‍🎓 Student Members
+      </h3>
+
+      <div style="overflow-x:auto;">
+        <table class="club-members-table">
+
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Student Name</th>
+              <th>Class</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            ${members}
+          </tbody>
+
+        </table>
+      </div>
+
+      <h3 style="margin-top:30px;color:var(--green);font-family:'Playfair Display',serif;">
+        📸 Club Activities
+      </h3>
+
+      <div class="club-activity-gallery">
+        ${photos}
+      </div>
+
+    </div>
+  `;
+}
+
+window.addEventListener("load",()=>{
+  loadClubs();
+});
+
+</script>
+
 </body>
+
 </html>
