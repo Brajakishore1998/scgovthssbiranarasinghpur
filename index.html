@@ -1671,11 +1671,23 @@ async function loadClubs(){
 
   try{
 
-    const response = await fetch(
-      "https://opensheet.elk.sh/1h9Vjtdj3GA65HulfRGoHCi8kAPAgorPl/clubs"
+    const rows = await fetchCSV(
+      "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_5ulKuwyDAuaUjxX3kH0hQWVFEhYvWDNBoS5UBfQvSvlKjRcPNb5naBK3m_YscA/pub?gid=1543487914&single=true&output=csv"
     );
 
-    allClubData = await response.json();
+    if(!rows || rows.length < 2){
+      throw new Error("No data");
+    }
+
+    // First row is headers; map remaining rows to named-key objects
+    const headers = rows[0];
+    allClubData = rows.slice(1)
+      .filter(r => r.some(c => c !== ''))
+      .map(r => {
+        const obj = {};
+        headers.forEach((h, i) => { obj[h] = r[i] || ''; });
+        return obj;
+      });
 
     showClub('Kaushali Club');
 
@@ -1683,7 +1695,7 @@ async function loadClubs(){
 
     document.getElementById("clubContent").innerHTML = `
       <div class="error-msg">
-        Unable to load club data.
+        Unable to load club data. Please ensure the Clubs sheet is published.
       </div>
     `;
   }
