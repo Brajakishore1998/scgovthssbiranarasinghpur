@@ -186,7 +186,7 @@ button{cursor:pointer;border:none;background:none;font-family:inherit;}
 .gallery-filter-btn.active,.gallery-filter-btn:hover{border-color:var(--saffron);background:var(--saffron);color:var(--navy);}
 .gallery-grid{display:flex;gap:16px;overflow-x:auto;scroll-behavior:smooth;padding-bottom:10px;}
 .gallery-item{border-radius:var(--radius);overflow:hidden;aspect-ratio:4/3;cursor:pointer;position:relative;box-shadow:var(--shadow-sm);}
-.gallery-item img{width:100%;height:100%;object-fit:cover;object-position:center;image-rendering:auto;transition:transform 0.4s ease;}
+.gallery-item img{width:100%;height:100%;object-fit:cover;transition:transform 0.4s ease;}
 .gallery-item:hover img{transform:scale(1.08);}
 .gallery-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(11,37,69,0.8),transparent);opacity:0;transition:var(--transition);display:flex;align-items:flex-end;padding:16px;}
 .gallery-item:hover .gallery-overlay{opacity:1;}
@@ -1272,7 +1272,7 @@ function parseCSV(text){
 
 function normKey(k){ return (k||'').toLowerCase().replace(/[\s_]+/g,''); }
 function driveThumb(url, sz='w1600'){ const m=(url||'').match(/[-\w]{25,}/); return m?`https://drive.google.com/thumbnail?id=${m[0]}&sz=${sz}`:''; }
-function driveThumbSm(url){ return driveThumb(url,'w2000'); }
+function driveThumbSm(url){ return driveThumb(url,'w400'); }
 
 // ===== SITE SETTINGS =====
 let siteSettings = {};
