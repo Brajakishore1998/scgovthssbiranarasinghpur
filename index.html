@@ -1679,15 +1679,68 @@ async function loadClubs(){
       throw new Error("No data");
     }
 
-    // First row is headers; map remaining rows to named-key objects
-    const headers = rows[0];
-    allClubData = rows.slice(1)
-      .filter(r => r.some(c => c !== ''))
-      .map(r => {
-        const obj = {};
-        headers.forEach((h, i) => { obj[h] = r[i] || ''; });
-        return obj;
-      });
+    // Row 1 & 2 are title/instruction rows; Row 3 (index 2) is the header row
+    // Sheet columns: Club Name | Role | Member Name | Class | Photo Link | Activity Photo
+    const headers = rows[2].map(h => h.trim());
+    const dataRows = rows.slice(3).filter(r => r.some(c => c !== ''));
+
+    // Build structured objects from raw rows
+    // We carry forward the last seen Club Name (it may only appear on first row of a club)
+    let lastClub = '';
+    const rawData = dataRows.map(r => {
+      const obj = {};
+      headers.forEach((h, i) => { obj[h] = (r[i] || '').trim(); });
+      if(obj['Club Name']) lastClub = obj['Club Name'];
+      else obj['Club Name'] = lastClub;
+      return obj;
+    });
+
+    // Now group by Role to separate Mentor / Co-Mentor / Members
+    // and normalise into the shape showClub() expects:
+    // { Club, Mentor, MentorPhoto, CoMentor, CoMentorPhoto, Member, Class, ActivityPhoto }
+    const grouped = {};
+    rawData.forEach(row => {
+      const club = row['Club Name'];
+      if(!club) return;
+      if(!grouped[club]) grouped[club] = { mentor: null, comentor: null, members: [], photos: [] };
+      const role = (row['Role'] || '').trim().toLowerCase();
+      if(role === 'mentor'){
+        grouped[club].mentor = { name: row['Member Name'], photo: row['Photo Link'] };
+      } else if(role === 'co-mentor' || role === 'comentor' || role === 'co mentor'){
+        grouped[club].comentor = { name: row['Member Name'], photo: row['Photo Link'] };
+      } else {
+        // Regular member row
+        if(row['Member Name']){
+          grouped[club].members.push({ name: row['Member Name'], cls: row['Class'] });
+        }
+      }
+      if(row['Activity Photo']) grouped[club].photos.push(row['Activity Photo']);
+    });
+
+    // Flatten into allClubData array (one entry per member, first row carries mentor info)
+    allClubData = [];
+    Object.entries(grouped).forEach(([clubName, g]) => {
+      const base = {
+        Club: clubName,
+        Mentor: g.mentor ? g.mentor.name : '',
+        MentorPhoto: g.mentor ? g.mentor.photo : '',
+        CoMentor: g.comentor ? g.comentor.name : '',
+        CoMentorPhoto: g.comentor ? g.comentor.photo : '',
+        ActivityPhoto: g.photos[0] || ''
+      };
+      if(!g.members.length){
+        allClubData.push({ ...base, Member: '', Class: '' });
+      } else {
+        g.members.forEach((m, i) => {
+          allClubData.push({
+            ...base,
+            Member: m.name,
+            Class: m.cls,
+            ActivityPhoto: g.photos[i] || g.photos[0] || ''
+          });
+        });
+      }
+    });
 
     showClub('Kaushali Club');
 
