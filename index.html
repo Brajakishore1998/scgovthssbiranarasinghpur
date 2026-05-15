@@ -1475,7 +1475,7 @@ async function loadFacilities(){
     const rows=await fetchCSV(sheetURL(GID.facilities));
     facilitiesData = [];
     let html='';
-    for(let i=4;i<rows.length;i++){
+    for(let i=3;i<rows.length;i++){
       const r=rows[i];
       if(!r[0]) continue;
       const name=r[0]||'', desc=r[1]||'', count=r[2]||'';
