@@ -802,7 +802,7 @@ footer{background:var(--navy);color:rgba(255,255,255,0.8);padding:50px 0 20px;}
     <div class="section-divider"></div>
 
     <div style="text-align:center;margin-bottom:30px;">
-      <button class="gallery-filter-btn active club-tab-btn" onclick="showClub('Kaushali Club',this)">Kaushali Club</button>
+      <button class="gallery-filter-btn club-tab-btn" onclick="showClub('Kaushali Club',this)">Kaushali Club</button>
       <button class="gallery-filter-btn club-tab-btn" onclick="showClub('Jigyasha Club',this)">Jigyasha Club</button>
       <button class="gallery-filter-btn club-tab-btn" onclick="showClub('Sahitya Srujani Club',this)">Sahitya Srujani Club</button>
       <button class="gallery-filter-btn club-tab-btn" onclick="showClub('Kridangana Club',this)">Kridangana Club</button>
@@ -1735,31 +1735,36 @@ async function loadClubs(){
     // Now group by Role to separate Mentor / Co-Mentor / Members
     // and normalise into the shape showClub() expects:
     // { Club, Mentor, MentorPhoto, CoMentor, CoMentorPhoto, Member, Class, ActivityPhoto }
+    // Convert any Google Drive view/share URL to a direct thumbnail URL
+    function toThumb(url){
+      if(!url) return '';
+      const m = url.match(/[-\w]{25,}/);
+      return m ? 'https://drive.google.com/thumbnail?id=' + m[0] + '&sz=w400' : url;
+    }
+
+    console.log('[Clubs] Raw data rows:', rawData.length);
+    rawData.forEach(r => console.log('[Clubs] Row:', JSON.stringify(r)));
+
     const grouped = {};
     rawData.forEach(row => {
       const club = row['Club Name'];
       if(!club) return;
       if(!grouped[club]) grouped[club] = { mentor: null, comentor: null, members: [], photos: [] };
-      // Convert any Google Drive view/share URL to a direct thumbnail URL
-      function toThumb(url){
-        if(!url) return '';
-        const m = url.match(/[-\w]{25,}/);
-        return m ? 'https://drive.google.com/thumbnail?id=' + m[0] + '&sz=w400' : url;
-      }
 
-      const role = (row['Role'] || '').trim().toLowerCase();
+      const role = (row['Role'] || '').trim().toLowerCase().replace(/\s+/g,'-');
       if(role === 'mentor'){
         grouped[club].mentor = { name: row['Member Name'], photo: toThumb(row['Photo Link']) };
-      } else if(role === 'co-mentor' || role === 'comentor' || role === 'co mentor'){
+      } else if(role.includes('co') && role.includes('mentor')){
         grouped[club].comentor = { name: row['Member Name'], photo: toThumb(row['Photo Link']) };
       } else {
-        // Regular member row
         if(row['Member Name']){
           grouped[club].members.push({ name: row['Member Name'], cls: row['Class'] });
         }
       }
       if(row['Activity Photo']) grouped[club].photos.push(toThumb(row['Activity Photo']));
     });
+
+    console.log('[Clubs] Grouped clubs:', Object.keys(grouped));
 
     // Flatten into allClubData array (one entry per member, first row carries mentor info)
     // ActivityPhotos (array) stored on every row for easy access in showClub
@@ -1799,27 +1804,27 @@ function showClub(clubName,btn=null){
   const content = document.getElementById("clubContent");
 
   const clubData = allClubData.filter(
-    item => item.Club === clubName
+    item => item.Club.trim().toLowerCase() === clubName.trim().toLowerCase()
   );
+  console.log('[Clubs] showClub:', clubName, '→', clubData.length, 'rows');
 
   if(!clubData.length){
-
     content.innerHTML = `
-      <div class="error-msg">
-        No data available for ${clubName}
+      <div style="text-align:center;padding:48px 20px;color:var(--gray-500);">
+        <i class="fas fa-clock" style="font-size:2.5rem;color:var(--saffron);margin-bottom:16px;display:block;"></i>
+        <h3 style="font-family:'Playfair Display',serif;color:var(--navy);margin-bottom:8px;">${clubName}</h3>
+        <p>Club data will be available soon. Please check back later.</p>
       </div>
     `;
-
     return;
   }
 
-  if(btn){
-    document.querySelectorAll('.club-tab-btn').forEach(b=>{
-      b.classList.remove('active');
-    });
-
-    btn.classList.add('active');
-  }
+  // Always update active button state
+  document.querySelectorAll('.club-tab-btn').forEach(b=>{
+    b.classList.remove('active');
+    if(b.textContent.trim() === clubName) b.classList.add('active');
+  });
+  if(btn){ btn.classList.add('active'); }
 
   const first = clubData[0];
 
