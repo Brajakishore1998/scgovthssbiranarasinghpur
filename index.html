@@ -106,7 +106,7 @@ button{cursor:pointer;border:none;background:none;font-family:inherit;}
 .hero-slider{position:relative;width:100%;height:100%;}
 .hero-slide{position:absolute;inset:0;opacity:0;transition:opacity 1s ease;}
 .hero-slide.active{opacity:1;}
-.hero-slide img{width:100%;height:100%;object-fit:cover;filter:brightness(0.55);}
+.hero-slide img{width:100%;height:100%;object-fit:cover;filter:brightness(0.45);}
 .hero-slide-bg{width:100%;height:100%;background:linear-gradient(135deg,var(--navy) 0%,var(--navy-light) 60%,rgba(15,122,50,0.3) 100%);}
 .hero-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(11,37,69,0.3) 0%,rgba(11,37,69,0.7) 100%);}
 .hero-content{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px;z-index:2;}
@@ -805,7 +805,7 @@ footer{background:var(--navy);color:rgba(255,255,255,0.8);padding:50px 0 20px;}
           <div class="school-info-item"><i class="fas fa-map-marker-alt"></i>Biranarasinghpur, Boudh</div>
           <div class="school-info-item"><i class="fas fa-graduation-cap"></i>Classes IX to XII</div>
           <div class="school-info-item"><i class="fas fa-book"></i>Arts Stream (Class XI & XII)</div>
-          <div class="school-info-item"><i class="fas fa-university"></i>Govt. School</div>
+          <div class="school-info-item"><i class="fas fa-university"></i>Govt. Aided School</div>
           <div class="school-info-item"><i class="fas fa-certificate"></i>Odisha Board (CHSE/BSE)</div>
           <div class="school-info-item"><i class="fas fa-language"></i>Medium: Odia &amp; English</div>
         </div>
@@ -1271,8 +1271,11 @@ function parseCSV(text){
 }
 
 function normKey(k){ return (k||'').toLowerCase().replace(/[\s_]+/g,''); }
-function driveThumb(url, sz='w1600'){ const m=(url||'').match(/[-\w]{25,}/); return m?`https://drive.google.com/thumbnail?id=${m[0]}&sz=${sz}`:''; }
-function driveThumbSm(url){ return driveThumb(url,'w400'); }
+// Full-res direct view (no compression) — used for lightbox, hero, facility modal
+function driveFullRes(url){ const m=(url||'').match(/[-\w]{25,}/); return m?`https://drive.google.com/uc?export=view&id=${m[0]}`:''; }
+// Thumbnail API — used only for small grid previews (fast loading)
+function driveThumb(url, sz='w800'){ const m=(url||'').match(/[-\w]{25,}/); return m?`https://drive.google.com/thumbnail?id=${m[0]}&sz=${sz}`:''; }
+function driveThumbSm(url){ return driveThumb(url,'w600'); }
 
 // ===== SITE SETTINGS =====
 let siteSettings = {};
@@ -1366,7 +1369,7 @@ async function loadHMMessage(){
     if(desig) document.getElementById('hmDesig').textContent=desig;
     if(msg) document.getElementById('hmMessageText').textContent=msg;
     if(photo){
-      const thumb=driveThumb(photo,'w800');
+      const thumb=driveFullRes(photo);
       if(thumb){
         const imgEl=document.getElementById('hmPhoto');
         imgEl.src=thumb;
@@ -1390,8 +1393,8 @@ async function loadGallery(){
       const r=rows[i];
       if(!r[0]&&!r[1]) continue;
       const url=r[0]||'', caption=r[1]||'', category=r[2]||'General', isHero=(r[3]||'').toLowerCase()==='yes';
-      const thumb=driveThumbSm(url);
-      const full=driveThumb(url);
+      const thumb=driveThumb(url,'w1200');
+      const full=driveFullRes(url);
       if(thumb){ galleryData.push({thumb,full,caption,category,isHero,original:url}); cats.add(category); }
     }
     // Build filters
@@ -1475,16 +1478,16 @@ async function loadFacilities(){
     const rows=await fetchCSV(sheetURL(GID.facilities));
     facilitiesData = [];
     let html='';
-    for(let i=3;i<rows.length;i++){
+    for(let i=4;i<rows.length;i++){
       const r=rows[i];
       if(!r[0]) continue;
       const name=r[0]||'', desc=r[1]||'', count=r[2]||'';
       // Column 4 (index 3): comma-separated Google Drive photo URLs
       const photoRaw = r[3]||'';
       const photos = photoRaw.split(',').map(u=>u.trim()).filter(u=>u.length>10);
-      // Full HD for lightbox, medium for modal grid previews
-      const thumbs = photos.map(u=>driveThumb(u)).filter(Boolean);       // w1600 full HD
-      const gridThumbs = photos.map(u=>driveThumb(u,'w600')).filter(Boolean); // w600 for grid
+      // Full-res for lightbox clicks, small thumbs for modal grid previews
+      const thumbs = photos.map(u=>driveFullRes(u)).filter(Boolean);      // full HD for lightbox
+      const gridThumbs = photos.map(u=>driveThumbSm(u)).filter(Boolean);  // w600 for grid tiles
 
       // Store for modal
       const facIndex = facilitiesData.length;
@@ -1606,7 +1609,7 @@ async function loadStaff(){
 function renderStaff(items){
   const el=document.getElementById('staffGrid');
   el.innerHTML=items.map(s=>{
-    const thumb=s.photo?driveThumb(s.photo,'w600'):'';
+    const thumb=s.photo?driveFullRes(s.photo):'';
     return `<div class="staff-card fade-in">
       <div class="staff-photo-wrap">
         ${thumb
@@ -1861,12 +1864,16 @@ async function loadClubs(){
     // and normalise into the shape showClub() expects:
     // { Club, Mentor, MentorPhoto, CoMentor, CoMentorPhoto, Member, Class, ActivityPhoto }
     // Convert any Google Drive view/share URL to a direct thumbnail URL
-    function toThumb(url, sz='w1600'){
+    function toThumb(url){
       if(!url) return '';
       const m = url.match(/[-\w]{25,}/);
-      return m ? 'https://drive.google.com/thumbnail?id=' + m[0] + '&sz=' + sz : url;
+      return m ? 'https://drive.google.com/uc?export=view&id=' + m[0] : url;
     }
-    function toThumbSm(url){ return toThumb(url, 'w600'); }
+    function toThumbSm(url){
+      if(!url) return '';
+      const m = url.match(/[-\w]{25,}/);
+      return m ? 'https://drive.google.com/thumbnail?id=' + m[0] + '&sz=w600' : url;
+    }
 
     console.log('[Clubs] Raw data rows:', rawData.length);
     rawData.forEach(r => console.log('[Clubs] Row:', JSON.stringify(r)));
@@ -1887,7 +1894,10 @@ async function loadClubs(){
           grouped[club].members.push({ name: row['Member Name'], cls: row['Class'] });
         }
       }
-      if(row['Activity Photo']) grouped[club].photos.push(toThumb(row['Activity Photo']));
+      if(row['Activity Photo']) grouped[club].photos.push({
+        full: toThumb(row['Activity Photo']),
+        sm:   toThumbSm(row['Activity Photo'])
+      });
     });
 
     console.log('[Clubs] Grouped clubs:', Object.keys(grouped));
@@ -2037,10 +2047,10 @@ function openClubGallery(clubName){
   if(!photos.length) return;
 
   // Build thumbnail grid inside modal
-  const thumbs = photos.map((src, i) => `
+  const thumbs = photos.map((p, i) => `
     <div onclick="clubGalleryNav(${i})"
       style="cursor:pointer;border-radius:8px;overflow:hidden;aspect-ratio:1;background:#111;">
-      <img src="${src}" style="width:100%;height:100%;object-fit:cover;opacity:0.85;transition:opacity .2s;"
+      <img src="${p.sm||p}" style="width:100%;height:100%;object-fit:cover;opacity:0.85;transition:opacity .2s;"
         onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.85"
         onerror="this.parentElement.style.display='none'">
     </div>
@@ -2063,7 +2073,7 @@ function clubGalleryNav(index){
   const modal = document.getElementById('clubGalleryModal');
   const photos = modal._photos || [];
   if(!photos[index]) return;
-  openLightbox(photos[index], document.getElementById('clubGalleryTitle').textContent);
+  openLightbox(photos[index].full||photos[index], document.getElementById('clubGalleryTitle').textContent);
 }
 
 window.addEventListener("load",()=>{
